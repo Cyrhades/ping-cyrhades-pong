@@ -2,6 +2,10 @@ var canvas = document.getElementById('gamePong');
 var ctx = canvas.getContext('2d');
 var speed = 30;
 
+// communication avec le serveur
+var socket = io.connect(document.location.host)
+
+
 var waitService = true;
 var playerService = 1;
 
@@ -183,8 +187,7 @@ function keyPress(event, player)
         case 32:    
             // seulement l'utilisateur qui a le service peut lancer la balle
             if(currentPlayer == playerService && waitService) {
-                waitService = false;
-                moveBall();                
+                socket.emit('client:player:service');              
             }
         break;
     }
@@ -193,11 +196,12 @@ function keyPress(event, player)
 
 
 document.addEventListener('DOMContentLoaded',() => {
-    // communication avec le serveur
-    var socket = io.connect(document.location.host)
-
     socket.on('connect', () => {
-
+        
+        socket.on('server:player:service', () => {
+            waitService = false;
+            moveBall();  
+        });
         // Ecoute serveur
         socket.on('server:game:start', () => {
             // On ne peut plus cliquer sur le bouton jouer

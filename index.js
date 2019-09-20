@@ -33,7 +33,10 @@ io.on('connection', (socket) => {
                 socket.on('client:racket:move', (player_1, player_2) => {
                     io.sockets.emit('server:racket:move',player_1, player_2);
                 })
-                
+
+                socket.on('client:player:service', () => {
+                    io.sockets.emit('server:player:service');
+                })
             } else {
                 spectators++;
                 io.sockets.emit('server:spectator:count',spectators);
